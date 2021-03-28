@@ -11,6 +11,7 @@ Deskripsi Tugas :
 */
 
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 typedef struct {
@@ -61,6 +62,14 @@ Titik bergerak(Titik posisi, char pilihan) {
 	return posisi;
 }
 
+Titik dropKecoa(){
+	Titik posisiawal;
+	posisiawal.x = rand() % 40;
+	posisiawal.y = rand() % 40;
+
+	return posisiawal;
+}
+
 int nyawa(int health, bool terserang) {
 	/* Update Nyawa */
 
@@ -74,6 +83,23 @@ int nyawa(int health, bool terserang) {
 	return health;
 }
 
+int hitungJarak(Titik robot, Titik kecoa){
+	float jarak, jarakx, jaraky;
+	jarakx = robot.x-kecoa.y;
+	jaraky = robot.y-kecoa.y;
+	jarak = sqrt(jarakx*jarakx - jaraky*jaraky);
+
+	return jarak;
+}
+
+void serang( Titik posisi, Titik posisiKecoa, float jarakMax){
+	if (hitungJarak(posisi, posisiKecoa) < jarakMax){
+		// lakukan penyerangan
+	} else{
+		cout << "Jarak terlalu jauh, robot tidak bisa menembak" << endl;
+	}
+}
+
 void info(Titik posisi, int health){
 	/* Menampilkan info ke layar */
 	/* Posisi kecoak belum ditampilkan */
@@ -82,10 +108,11 @@ void info(Titik posisi, int health){
 	cout << "Nyawa robot : "<<health<<endl;
 }
 
-void intro(){
+void intro(Titik posisikecoa){
 	cout << "Selamat datang dalam program Urang Robot Orang"<<endl;
-	cout<<endl;
+	cout <<endl;
 	/* Intronya diubah wae mangga wkwk aku bingung */
+	cout <<  "Posisi awal kecoa : (" << posisikecoa.x << "," << posisikecoa.y << ")" << endl;
 }
 
 void outro(){
@@ -95,15 +122,18 @@ void outro(){
 
 int main() {
 	char inp;	
-	Titik posisi;
+	Titik posisi, posisiKecoa;
 	int health;
 	bool terserang;
+	float jarakMax = 10;
 
 	posisi.x = 0;
 	posisi.y = 0;
 	health = 20; /* Nyawa awal bisa diubah*/
 
-	intro();
+	posisiKecoa = dropKecoa();
+
+	intro(posisi);
 
 	while (true) {
 		inp = masukan(posisi);
@@ -111,6 +141,7 @@ int main() {
 			break; /* Terminasi Program */
 		} else if (inp == 'a') {
 			/* Menyerang */
+			serang(posisi, posisiKecoa, jarakMax);
 		} else {
 			posisi = bergerak(posisi, inp);
 		}
