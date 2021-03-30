@@ -19,8 +19,30 @@ typedef struct {
 	int y;
 } Titik ;
 
-bool validBergerak(Titik posisiRobot, Titik posisiKecoa, char pilihan);
+/* fungsi mengecek apakah posisi robot sama dengan posisi kecoa */
+bool isSame(Titik posisiRobot, Titik posisiKecoa){
+	if (posisiKecoa.x == posisiRobot.x && posisiKecoa.y == posisiRobot.y) return true;
+	else return false; 
+}
 
+/* fungsi mengecek apakah robot bisa bergerak sesuai dengan perintah yang dimasukkan atau tidak */
+bool validBergerak(Titik posisiRobot, Titik posisiKecoa, char pilihan){
+	if (pilihan == 'f' && (posisiRobot.y + 1 != posisiKecoa.y)){
+		return true;
+	} else if (pilihan == 'r' && !isSame(posisiRobot, posisiKecoa)){
+		return true;
+	} else if (pilihan == 'b' && posisiRobot.y > 0 && !isSame(posisiRobot, posisiKecoa)) {
+		return true;
+	} else if (pilihan == 'l' && posisiRobot.x > 0 && !isSame(posisiRobot, posisiKecoa)) {
+		return true;
+	} else if (pilihan == 's') {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/* fungsi menerima masukan pilihan bergerak untuk robot */
 char masukan(Titik posisi, Titik posisiKecoa) {
 	/* Menerima input user dan validasi */
 
@@ -47,24 +69,10 @@ char masukan(Titik posisi, Titik posisiKecoa) {
 	return pilihan;
 }
 
-bool validBergerak(Titik posisiRobot, Titik posisiKecoa, char pilihan){
-	if (pilihan == 'f' && (posisiRobot.y + 1 != posisiKecoa.y)){
-		return true;
-	} else if (pilihan == 'r' && (posisiRobot.x + 1 != posisiKecoa.x)){
-		return true;
-	} else if (pilihan == 'b' && posisiRobot.y > 0 && (posisiRobot.y - 1) != posisiKecoa.y) {
-		return true;
-	} else if (pilihan == 'l' && posisiRobot.x > 0 && (posisiRobot.x - 1) != posisiKecoa.x) {
-		return true;
-	} else if (pilihan == 's') {
-		return true;
-	} else {
-		return false;
-	}
-}
-
+/* fungsi bergerak bagi robot.
+memerlukan parameter posisi awal robot dan pilihan pergerakan
+kemudian mengembalikan posisi robot setelah bergerak */
 Titik bergerak(Titik posisi, char pilihan) {
-	/* Bergerak */
 
 	if (pilihan == 'f') {
 		posisi.y += 1;
@@ -81,32 +89,30 @@ Titik bergerak(Titik posisi, char pilihan) {
 	return posisi;
 }
 
+/* fungsi penentuan titik munculnya kecoa secara random */
 Titik dropKecoa(Titik posisiRobot){
 	Titik posisiKecoa;
 	while (true) {
-		posisiKecoa.x = rand() % 40;
-		posisiKecoa.y = rand() % 40;
+		posisiKecoa.x = rand() % 25;
+		posisiKecoa.y = rand() % 25;
 	
-		if (posisiKecoa.x != posisiRobot.x && posisiKecoa.y != posisiRobot.y){
-			break;
-		}
+		if (!isSame(posisiRobot, posisiKecoa)) break;
 	}
 	return posisiKecoa;
 }
 
+/* fungsi mengupdate nyawa robot */
 int nyawa(int health, bool terserang) {
-	/* Update Nyawa */
-
 	int pengurangNyawa;
-	
 	pengurangNyawa = 1; // Bisa diubah
-
 	if (terserang) {
 		health -= pengurangNyawa;
 	}
 	return health;
 }
 
+/* fungsi untuk menghitung jarak antara kecoa dan robot. 
+memerlukan parameter posisi robot dan kecoa dan mengembalikan jarak antara keduanya */
 float hitungJarak(Titik robot, Titik kecoa){
 	float jarak, jarakx, jaraky;
 	jarakx = robot.x - kecoa.y;
@@ -116,6 +122,9 @@ float hitungJarak(Titik robot, Titik kecoa){
 	return jarak;
 }
 
+/* fungsi validasi apakah robot bisa menyerang atau tidak.
+memerlukan parameter posisi robot, kecoa, dan jangkauan serangan maksimum.
+menegembalikan hasil validasi berupa boolean */
 bool bisaSerang( Titik posisi, Titik posisiKecoa, float jarakMax){
 	if (hitungJarak(posisi, posisiKecoa) < jarakMax){
 		return true;
@@ -125,30 +134,41 @@ bool bisaSerang( Titik posisi, Titik posisiKecoa, float jarakMax){
 	}
 }
 
+/* prosedur mengeluarkan info
+I.S : posisiRobot, posisiKecoa, health terdefinisi
+F.S : mengeluarkan deskripsi berdasarkan parameter di atas */
 void info(Titik posisiRobot, Titik posisiKecoa, int health){
-	/* Menampilkan info ke layar */
-	/* Posisi kecoak belum ditampilkan */
-
-	cout << "Posisi robot : ("<<posisiRobot.x<<","<<posisiRobot.y<<")"<<endl;
-	cout << "Nyawa robot : "<<health<<endl;
-	cout << "Posisi kecoa : ("<<posisiKecoa.x<<","<<posisiKecoa.y<<")"<<endl;
+	cout << "Posisi robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
+	cout << "Nyawa robot : " << health << endl;
+	cout << "Posisi kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
 }
 
+/* prosedur mengeluarkan intro di awal program
+I.S : posisiRobot, posisiKecoa, health terdefinisi
+F.S : mengeluarkan deskripsi awal program berdasarkan parameter di atas */
 void intro(Titik posisiRobot, Titik posisiKecoa, int health){
-	cout << "Selamat datang dalam program Urang Robot Orang"<<endl;
+	cout << "Selamat datang dalam program Urang Robot Orang" << endl;
 	cout <<endl;
-	/* Intronya diubah wae mangga wkwk aku bingung */
+	cout << "Ini adalah program game robot pemburu kecoa. Anda diminta untuk membunuh kecoa sebanyak mungkin" << endl;
+	cout << "dengan robot yang dapat bergerak dan menembak sesuai dengan perintah Anda." << endl;
+	cout << endl;
 	cout << "Posisi awal robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
 	cout << "Nyawa awal robot : " << health <<endl;
 	cout << "Posisi awal kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
 }
 
+/* prosedur mengeluarkan outro
+I.S : countKecoa terdefinisi
+F.S : mengeluarkan penutup program berdaasarkan parameter di atas */
 void outro(int countKecoa){
-	cout<<"Robot telah membunuh kecoa sebanyak : " << countKecoa<<endl;
-	cout<< "Program selesai. Terima kasih"<<endl;
-	/* Outro ne diubah yo wkwkw aku bingung*/
+	cout<< "Program telah selesai."<<endl;
+	cout<< "Selamat, Robot Anda telah membunuh " << countKecoa << " kecoa " << endl;
+	cout<< "Terima kasih telah menggunakan program kami." << endl;
 }
 
+/* fungsi untuk menggerakkan robot.
+memerlukan parameter posisi robot dan kecoa serta pilihan bergerak.
+kemudian mengembalikan posisi robot setelah bergerak */
 Titik totalBergerak(Titik posisiRobot, Titik posisiKecoa, char inp){
 	while (!validBergerak(posisiRobot, posisiKecoa, inp)){
 		cout << "Masukan invalid, robot tidak dapat bergerak ke arah yang dipilih" << endl;
@@ -158,6 +178,9 @@ Titik totalBergerak(Titik posisiRobot, Titik posisiKecoa, char inp){
 	return bergerak(posisiRobot, inp);
 }
 
+/* fungsi diserang
+memerlukan parameter posisis robot dan kecoa dan mengembalikan 
+boolean apakah robot dalam radius serang kecoa */
 bool diserang(Titik posisiRobot, Titik posisiKecoa) {
 	if (hitungJarak(posisiRobot, posisiKecoa) < 5) {
 		return true;
@@ -166,6 +189,7 @@ bool diserang(Titik posisiRobot, Titik posisiKecoa) {
 	}
 }
 
+/* MAIN PROGRAM */
 int main() {
 	char inp;	
 	Titik posisiRobot, posisiKecoa;
