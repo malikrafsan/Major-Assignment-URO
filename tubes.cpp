@@ -12,6 +12,7 @@ Deskripsi Tugas :
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 using namespace std;
 
 typedef struct {
@@ -138,32 +139,39 @@ bool bisaSerang( Titik posisi, Titik posisiKecoa, float jarakMax){
 I.S : posisiRobot, posisiKecoa, health terdefinisi
 F.S : mengeluarkan deskripsi berdasarkan parameter di atas */
 void info(Titik posisiRobot, Titik posisiKecoa, int health){
-	cout << "Posisi robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
-	cout << "Nyawa robot : " << health << endl;
-	cout << "Posisi kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
+	cout << "  Posisi robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
+	cout << "  Nyawa robot : " << health << endl;
+	cout << "  Posisi kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
+	cout << endl;
 }
 
 /* prosedur mengeluarkan intro di awal program
 I.S : posisiRobot, posisiKecoa, health terdefinisi
 F.S : mengeluarkan deskripsi awal program berdasarkan parameter di atas */
-void intro(Titik posisiRobot, Titik posisiKecoa, int health){
-	cout << "Selamat datang dalam program Urang Robot Orang" << endl;
-	cout <<endl;
-	cout << "Ini adalah program game robot pemburu kecoa. Anda diminta untuk membunuh kecoa sebanyak mungkin" << endl;
-	cout << "dengan robot yang dapat bergerak dan menembak sesuai dengan perintah Anda." << endl;
+void intro(Titik posisiRobot, Titik posisiKecoa, int health, float jarakMax){
+	cout << "----------------------------------------------------------------------------------------------------------" << endl;
+	cout << "|                          Selamat datang dalam program Urang Robot Orang                                |" << endl;
+	cout << "|                                                                                                        |" << endl;
+	cout << "|    Ini adalah program game robot pemburu kecoa. Anda diminta untuk membunuh kecoa sebanyak mungkin.    |" << endl;
+	cout << "|            Anda dapat memanfaatkan perintah-perintah yang tersedia di dalam program ini.               |" << endl;
+	cout << "----------------------------------------------------------------------------------------------------------" << endl;
 	cout << endl;
-	cout << "Posisi awal robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
-	cout << "Nyawa awal robot : " << health <<endl;
-	cout << "Posisi awal kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
+	cout << "  Posisi awal robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
+	cout << "  Nyawa awal robot : " << health <<endl;
+	cout << "  Posisi awal kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
+	cout << "  Jangkauan serang robot : " << jarakMax << endl;
+	cout << endl;
 }
 
 /* prosedur mengeluarkan outro
 I.S : countKecoa terdefinisi
 F.S : mengeluarkan penutup program berdaasarkan parameter di atas */
 void outro(int countKecoa){
-	cout<< "Program telah selesai."<<endl;
-	cout<< "Selamat, Robot Anda telah membunuh " << countKecoa << " kecoa " << endl;
-	cout<< "Terima kasih telah menggunakan program kami." << endl;
+	cout << "----------------------------------------------------------------------------------------------------------" << endl;
+	cout << "|                                         Program telah selesai.                                         |"<<endl;
+	cout << "|                               Selamat, Robot Anda telah membunuh " << countKecoa << " kecoa                               |" << endl;
+	cout << "|                              Terima kasih telah menggunakan program kami.                              |" << endl;
+	cout << "----------------------------------------------------------------------------------------------------------" << endl;
 }
 
 /* fungsi untuk menggerakkan robot.
@@ -204,9 +212,9 @@ int main() {
 
 	posisiKecoa = dropKecoa(posisiRobot);
 
-	intro(posisiRobot, posisiKecoa, health);
-
 	while (true) {
+		system("cls");
+		intro(posisiRobot, posisiKecoa, health, jarakMax);
 		inp = masukan(posisiRobot, posisiKecoa);
 		if (inp == 's') {
 			break; /* Terminasi Program */
