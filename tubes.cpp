@@ -13,6 +13,7 @@ Deskripsi Tugas :
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <iomanip>
 using namespace std;
 
 typedef struct {
@@ -28,13 +29,13 @@ bool isSame(Titik posisiRobot, Titik posisiKecoa){
 
 /* fungsi mengecek apakah robot bisa bergerak sesuai dengan perintah yang dimasukkan atau tidak */
 bool validBergerak(Titik posisiRobot, Titik posisiKecoa, char pilihan){
-	if (pilihan == 'f' && (posisiRobot.y + 1 != posisiKecoa.y)){
+	if (pilihan == 'f' && ((posisiRobot.y + 1 != posisiKecoa.y) || (posisiRobot.x != posisiKecoa.x))){
 		return true;
-	} else if (pilihan == 'r' && !isSame(posisiRobot, posisiKecoa)){
+	} else if (pilihan == 'r' && ((posisiRobot.x + 1 != posisiKecoa.x) || (posisiRobot.y != posisiKecoa.y))){
 		return true;
-	} else if (pilihan == 'b' && posisiRobot.y > 0 && !isSame(posisiRobot, posisiKecoa)) {
+	} else if (pilihan == 'b' && posisiRobot.y > 0 && ((posisiRobot.y - 1 != posisiKecoa.y) || (posisiRobot.x != posisiKecoa.x))) {
 		return true;
-	} else if (pilihan == 'l' && posisiRobot.x > 0 && !isSame(posisiRobot, posisiKecoa)) {
+	} else if (pilihan == 'l' && posisiRobot.x > 0 && ((posisiRobot.x - 1 != posisiKecoa.x) || (posisiRobot.y != posisiKecoa.y))) {
 		return true;
 	} else if (pilihan == 's') {
 		return true;
@@ -105,6 +106,7 @@ Titik dropKecoa(Titik posisiRobot){
 /* fungsi mengupdate nyawa robot */
 int nyawa(int health, bool terserang) {
 	int pengurangNyawa;
+
 	pengurangNyawa = 1; // Bisa diubah
 	if (terserang) {
 		health -= pengurangNyawa;
@@ -116,7 +118,7 @@ int nyawa(int health, bool terserang) {
 memerlukan parameter posisi robot dan kecoa dan mengembalikan jarak antara keduanya */
 float hitungJarak(Titik robot, Titik kecoa){
 	float jarak, jarakx, jaraky;
-	jarakx = robot.x - kecoa.y;
+	jarakx = robot.x - kecoa.x;
 	jaraky = robot.y - kecoa.y;
 	jarak = sqrt(jarakx*jarakx + jaraky*jaraky);
 
@@ -127,7 +129,7 @@ float hitungJarak(Titik robot, Titik kecoa){
 memerlukan parameter posisi robot, kecoa, dan jangkauan serangan maksimum.
 menegembalikan hasil validasi berupa boolean */
 bool bisaSerang( Titik posisi, Titik posisiKecoa, float jarakMax){
-	if (hitungJarak(posisi, posisiKecoa) < jarakMax){
+	if (hitungJarak(posisi, posisiKecoa) <= jarakMax){
 		return true;
 	} else{
 		cout << "Jarak terlalu jauh, robot tidak bisa menembak dan harus bergerak" << endl;
@@ -135,20 +137,11 @@ bool bisaSerang( Titik posisi, Titik posisiKecoa, float jarakMax){
 	}
 }
 
-/* prosedur mengeluarkan info
-I.S : posisiRobot, posisiKecoa, health terdefinisi
-F.S : mengeluarkan deskripsi berdasarkan parameter di atas */
-void info(Titik posisiRobot, Titik posisiKecoa, int health){
-	cout << "  Posisi robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
-	cout << "  Nyawa robot : " << health << endl;
-	cout << "  Posisi kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
-	cout << endl;
-}
-
 /* prosedur mengeluarkan intro di awal program
 I.S : posisiRobot, posisiKecoa, health terdefinisi
 F.S : mengeluarkan deskripsi awal program berdasarkan parameter di atas */
-void intro(Titik posisiRobot, Titik posisiKecoa, int health, float jarakMax){
+void intro(Titik posisiRobot, Titik posisiKecoa, int health, float jarakMax, float jarakKecoa){
+
 	cout << "----------------------------------------------------------------------------------------------------------" << endl;
 	cout << "|                          Selamat datang dalam program Urang Robot Orang                                |" << endl;
 	cout << "|                                                                                                        |" << endl;
@@ -156,10 +149,11 @@ void intro(Titik posisiRobot, Titik posisiKecoa, int health, float jarakMax){
 	cout << "|            Anda dapat memanfaatkan perintah-perintah yang tersedia di dalam program ini.               |" << endl;
 	cout << "----------------------------------------------------------------------------------------------------------" << endl;
 	cout << endl;
-	cout << "  Posisi awal robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
-	cout << "  Nyawa awal robot : " << health <<endl;
-	cout << "  Posisi awal kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
+	cout << "  Posisi robot : (" << posisiRobot.x << "," << posisiRobot.y << ")" << endl;
+	cout << "  Nyawa robot : " << health <<endl;
+	cout << "  Posisi kecoa : (" << posisiKecoa.x << "," << posisiKecoa.y << ")" << endl;
 	cout << "  Jangkauan serang robot : " << jarakMax << endl;
+	cout << "  Jangkauan serang kecoak : " << jarakKecoa << endl;
 	cout << endl;
 }
 
@@ -189,8 +183,8 @@ Titik totalBergerak(Titik posisiRobot, Titik posisiKecoa, char inp){
 /* fungsi diserang
 memerlukan parameter posisis robot dan kecoa dan mengembalikan 
 boolean apakah robot dalam radius serang kecoa */
-bool diserang(Titik posisiRobot, Titik posisiKecoa) {
-	if (hitungJarak(posisiRobot, posisiKecoa) < 5) {
+bool diserang(Titik posisiRobot, Titik posisiKecoa, float jarakKecoa) {
+	if (hitungJarak(posisiRobot, posisiKecoa) <= jarakKecoa) {
 		return true;
 	} else {
 		return false;
@@ -204,6 +198,7 @@ int main() {
 	int health, countKecoa;
 	bool terserang;
 	float jarakMax = 10;
+	float jarakKecoa = 5;
 
 	posisiRobot.x = 0;
 	posisiRobot.y = 0;
@@ -214,7 +209,7 @@ int main() {
 
 	while (true) {
 		system("cls");
-		intro(posisiRobot, posisiKecoa, health, jarakMax);
+		intro(posisiRobot, posisiKecoa, health, jarakMax, jarakKecoa);
 		inp = masukan(posisiRobot, posisiKecoa);
 		if (inp == 's') {
 			break; /* Terminasi Program */
@@ -240,10 +235,14 @@ int main() {
 			}
 		}
 
-		terserang = diserang(posisiRobot, posisiKecoa);
+		terserang = diserang(posisiRobot, posisiKecoa, jarakKecoa);
 		health = nyawa(health, terserang);
 
-		info(posisiRobot, posisiKecoa, health);
+		if (health == 0) {
+			cout <<endl;
+			cout << "Nyawa robot telah habis"<<endl;
+			break;
+		}
 	}
 	outro(countKecoa);
 
